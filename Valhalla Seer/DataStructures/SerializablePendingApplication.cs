@@ -12,9 +12,10 @@ namespace Valhalla_Seer.DataStructures
         public ulong ChannelID { get; private set; }
         public ulong MessageID { get; private set; }
         public ulong ApplicatntID { get; private set; }
-        public string ApplicantResponses { get; private set; }
+        public string[] ApplicantResponses { get; private set; }
+        public SerializableApplicationInProgress serializableApplicationInProgress { get; private set; }
 
-        public SerializablePendingApplication(PendingApplication pendingApplication)
+        public SerializablePendingApplication(PendingApplication pendingApplication, ApplicationInProgress applicationInProgress)
         {
             Title = pendingApplication.Title;
             GuildID = pendingApplication.Message.Channel.GuildId;
@@ -22,8 +23,7 @@ namespace Valhalla_Seer.DataStructures
             MessageID = pendingApplication.Message.Id;
             ApplicatntID = pendingApplication.Applicant.Id;
             ApplicantResponses = pendingApplication.ApplicantRespones;
+            serializableApplicationInProgress = new SerializableApplicationInProgress(applicationInProgress);
         }
-
-        public SerializablePendingApplication GetFinishedApplication() { return this; }
     }
 }

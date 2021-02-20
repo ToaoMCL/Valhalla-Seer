@@ -2,7 +2,7 @@
 
 namespace Valhalla_Seer.Saving
 {
-    public interface ISaving
+    public interface ISavable
     {
         object CaptureState();
         Task RestoreState(object state);

@@ -7,35 +7,68 @@ namespace Valhalla_Seer.Saving
 {
     internal static class SavingSystem
     {
-        public static void Save(string fileName, List<object> objects)
+        const string SAVE_FOLDER = "Data";
+        static bool saving = false;
+
+        /// <summary>
+        /// Saves a collection of serializable object states in a dictonary where dictionary key is the file name
+        /// </summary>
+        /// <param name="FolderName"> name of the folder that the dictionary will be saved to</param>
+        /// <param name="objects"> the collection of objects to save</param>
+        public static void Save(string FolderName, Dictionary<string, object> objects)
         {
-            Dictionary<string, object> state = Load(fileName);
-            CaptureState(state, objects);
-            SaveFile(fileName, state);
+            if (saving) return;
+            saving = true;   
+            foreach(KeyValuePair<string, object> obj in objects)
+            {
+                //object state = LoadFile(fileName);
+                // object state = obj;
+                // CaptureState(state, objects);
+                SaveFile(FolderName, obj.Key, obj.Value);
+            }
+            saving = false;
         }
 
-        public static Dictionary<string, object> Load(string saveFile)
+        public static object LoadFile(string saveFolder, string saveFile)
         {
-            string path = GetPathFromSaveFile(saveFile);
-            if (!File.Exists(path))
-            {
-                return new Dictionary<string, object>();
-            }
+            string path = GetPathFromSaveFile(saveFolder, saveFile);
+            if (!File.Exists(path)) return null;
+
             using (FileStream stream = File.Open(path, FileMode.Open))
             {
                 BinaryFormatter formatter = new BinaryFormatter();
-                return (Dictionary<string, object>)formatter.Deserialize(stream);
+                return formatter.Deserialize(stream);
             }
         }
-        private static void SaveFile(string saveFile, object state)
+
+        public static List<object> LoadFileTypes(string folder, string fileType)
         {
-            string path = GetPathFromSaveFile(saveFile);
-            Console.WriteLine("Saving to " + path);
-            using (FileStream stream = File.Open(path, FileMode.Create))
+            string directory = GetDirectoryFromSaveFile(folder);
+            //string path = GetPathFromSaveFile(folder, fileType);
+            if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
+
+            string[] filePaths = Directory.GetFiles(directory, "*" + fileType);
+            BinaryFormatter formatter = new BinaryFormatter();
+            List<object> objectsFound = new List<object>();
+            foreach (string path in filePaths)
             {
-                BinaryFormatter formatter = new BinaryFormatter();
-                formatter.Serialize(stream, state);
+                using (FileStream stream = File.Open(path, FileMode.Open))
+                {
+                    objectsFound.Add(formatter.Deserialize(stream));
+                }
             }
+            return objectsFound;
+        }
+
+        private static void SaveFile(string saveFolder, string saveFile, object state)
+        {
+            string directory = GetDirectoryFromSaveFile(saveFolder);
+            string path = GetPathFromSaveFile(saveFolder, saveFile);
+            if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
+            Console.WriteLine("Saving to " + path);
+            using FileStream stream = File.Open(path, FileMode.Create);
+            BinaryFormatter formatter = new BinaryFormatter();
+            formatter.Serialize(stream, state);
         }
 
         private static void CaptureState(Dictionary<string, object> state, List<object> objects)
@@ -48,8 +81,8 @@ namespace Valhalla_Seer.Saving
             }
         }
 
-
-        private static string GetPathFromSaveFile(string saveFile) { return Path.Combine(Environment.CurrentDirectory, saveFile); }
-        public static void Delete(string saveFile) { File.Delete(GetPathFromSaveFile(saveFile)); }
+        private static string GetDirectoryFromSaveFile(string saveFile) { return Path.Combine(Environment.CurrentDirectory, SAVE_FOLDER, saveFile); }
+        private static string GetPathFromSaveFile(string saveFolder, string saveFile) { return Path.Combine(Environment.CurrentDirectory, SAVE_FOLDER, saveFolder, saveFile); }
+        public static void Delete(string saveFolder, string saveFile) { File.Delete(GetPathFromSaveFile(saveFolder, saveFile)); }
     }
 }

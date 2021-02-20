@@ -4,7 +4,12 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Valhalla_Seer</RootNamespace>
+    <ApplicationIcon>Logo-export.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="bin\Debug\netcoreapp3.1\Change Log.txt" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Include="bin\Debug\netcoreapp3.1\config.json" />

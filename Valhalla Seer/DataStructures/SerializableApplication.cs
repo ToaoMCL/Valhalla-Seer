@@ -7,32 +7,28 @@ namespace Valhalla_Seer.DataStructures
     [System.Serializable]
     class SerializableApplication
     {
-        string title;
-        Question[] questions;
-        
+        public string Title { get; private set; }
+        public Question[] Questions { get; private set; }
+        public ulong[] RoleIds { get; private set; }
 
-        public SerializableApplication(string title, List<Question> questions)
+        public SerializableApplication(Application application)
         {
-            this.title = title;
-
+            this.Title = application.Title;
 
             int i = 0;
-            this.questions = new Question[questions.Count];
-            foreach(Question question in questions)
+            this.Questions = new Question[application.Questions.Count];
+            foreach(Question question in application.Questions)
             {
-                this.questions[i] = question;
+                this.Questions[i] = question;
                 i++;
             }
-        }
-
-        public Application ToApplication() 
-        {
-            Application application = new Application(title);
-            foreach(Question question in questions)
+            i = 0;
+            this.RoleIds = new ulong[application.RoleIdList.Count];
+            foreach(ulong id in application.RoleIdList)
             {
-                application.AddQuestion(question.Title, question.Description);
+                this.RoleIds[i] = id;
+                i++;
             }
-            return application; 
         }
     }
 }

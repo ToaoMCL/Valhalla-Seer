@@ -46,8 +46,8 @@ namespace Valhalla_Seer
 
             Client.UseInteractivity(new InteractivityConfiguration
             {
-                Timeout = TimeSpan.FromMinutes(2)
-            });
+                Timeout = TimeSpan.FromHours(36)
+            }) ;
 
             var commandsConfig = new CommandsNextConfiguration
             {
@@ -60,13 +60,8 @@ namespace Valhalla_Seer
 
             Commands = Client.UseCommandsNext(commandsConfig);
             Commands.RegisterCommands<ApplicationCommands>();
-            Commands.RegisterCommands<TeamCommands>();
-            Commands.RegisterCommands<FunCommands>();
-
             await ApplicationCommands.Init().ConfigureAwait(false);
-
             await Client.ConnectAsync();
-
             await Task.Delay(-1);
         }
 
